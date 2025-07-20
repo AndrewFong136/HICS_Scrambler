@@ -4,22 +4,41 @@ A team scrambler for the HKU International Case Society aiming to minimise team 
 
 ## Current constraints:
 - Only accepts exactly 48 members to form 12 teams of 4
-- Only accepts TXT or CSV files
+- Only accepts XLSX or CSV files
 - Only accepts 4 specific roles
 - File input specific requirements:
     Name Preferences(1 - 4, separated by space) Past matches(no limit, separated by space)
 
 ## Prerequisites:
-- MinGW installed
+- CMake installed
+- [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/?q=build+tools#build-tools-for-visual-studio-2022)
 
 You can choose to directly run the binary EXE, or build from source.
 
 ## Build from source:
 
-On your command line, run
+As v1.1 requires OpenXLSX for .xlsx support, download the OpenXLSX file here: 
+https://github.com/troldal/OpenXLSX/tree/5723411d47643ce3b5b9994064c26ca8cd841f13/OpenXLSX
+
+In your `/path/to/HICS_Scrambler/`, place the OpenXLSX file inside.
+
+If you haven't already, from your Visual Studio Installer, choose "Desktop development with C++" as shown below:
+
+<img width="1710" height="572" alt="image" src="https://github.com/user-attachments/assets/cdd490b1-d929-46e1-9df5-d5d024356800" />
+<br/><br/>
+
+Open up the Developer Command Prompt for VS from your search toolbar (run as administrator), and run the following commands:
 ```
-g++ /path/to/Scrambler.cpp -static -o /path/to/Scrambler.exe
+cd /path/to/HICS_Scrambler/
+mkdir build
+cd build
 ```
+```
+cmake ..
+cmake --build . --config Release
+```
+
+Your program should be ready in `/path/to/HICS_Scrambler/build/Release/Scrambler.exe`.
 
 ## Algorithm
 The team scrambling algorithm is [simulated annealing](https://www.baeldung.com/cs/simulated-annealing):

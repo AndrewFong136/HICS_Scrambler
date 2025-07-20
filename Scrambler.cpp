@@ -12,7 +12,11 @@
 #include <memory>
 #include <sstream>
 
+// OpenXLSX header
+#include "OpenXLSX/OpenXLSX.hpp"
+
 using namespace std;
+using namespace OpenXLSX;
 
 string teams[12][4];
 map<string, array<int, 4>> db;
@@ -42,7 +46,7 @@ int main() {
     cout << "Type 'END' to finish input.\n\n";
 
     restart:
-    cout << "Enter filename (Supported file types: .txt, .csv):\n";
+    cout << "Enter filename (Supported file types: .xlsx, .csv):\n";
 
     string filename;
     getline(cin, filename);
@@ -53,8 +57,36 @@ int main() {
     // Set delimiter based on file type
     char delimiter;
 
-    if(filename.find(".txt") != string::npos) {
-        delimiter = ' ';        
+    if(filename.find(".xlsx") != string::npos) {
+        delimiter = ' ';
+        cout << "Processing Excel file...\n";
+
+        XLDocument doc;
+        doc.open(filename);
+        XLWorksheet worksheet = doc.workbook().sheet(1);
+
+        string outFileName = filename.substr(0, filename.find_last_of('.')) + ".txt";
+        ofstream outFile(outFileName);
+
+        // Get the used range
+        auto range = worksheet.range();
+        int rowCount = range.numRows();
+        int colCount = range.numColumns();
+
+        for (int row = 1; row <= rowCount; row++) {
+            for (int col = 1; col <= colCount; col++) {
+                auto cell = worksheet.cell(row, col);
+                if (col > 1) outFile << delimiter; // Add delimiter before each cell except the first
+                outFile << cell.value().get<string>();
+            }
+            outFile << '\n';
+        }
+
+        outFile.close();
+        doc.close();
+
+        file.open(outFileName, ios::in);
+        
     } else if(filename.find(".csv") != string::npos) {
         delimiter = ',';
     } else {
