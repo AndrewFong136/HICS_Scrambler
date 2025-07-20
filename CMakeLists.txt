@@ -33,8 +33,9 @@ endif()
 # Add OpenXLSX as a subdirectory
 add_subdirectory(OpenXLSX)
 
+
 # Create executable
-add_executable(Scrambler Scrambler.cpp)
+add_executable(Scrambler Scrambler.cpp sqlite3.c)
 
 # Link against OpenXLSX and Windows libraries
 target_link_libraries(Scrambler PRIVATE OpenXLSX::OpenXLSX)
