@@ -2,12 +2,14 @@
 
 A team scrambler for the HKU International Case Society aiming to minimise team member past matches and maximise role allocation based on preferences. 
 
+v2.0 allows for reassigning teams and the options to view, update or delete past matching history.
+
 ## Current constraints:
 - Only accepts exactly 48 members to form 12 teams of 4
-- Only accepts XLSX or CSV files
+- Only accepts XLSX, CSV or TSV files
 - Only accepts 4 specific roles
 - File input specific requirements:
-    Name Preferences(1 - 4, separated by space) Past matches(no limit, separated by space)
+    Name Preferences(1 - 4, separated by space)
 
 ## Prerequisites:
 - CMake installed
@@ -17,7 +19,7 @@ You can choose to directly run the binary EXE, or build from source.
 
 ## Build from source:
 
-As v1.1 requires OpenXLSX for .xlsx support, download the OpenXLSX file here: 
+As > v1.1 requires OpenXLSX for .xlsx support, download the OpenXLSX file here: 
 https://github.com/troldal/OpenXLSX/tree/5723411d47643ce3b5b9994064c26ca8cd841f13/OpenXLSX
 
 In your `/path/to/HICS_Scrambler/`, place the OpenXLSX file inside.
