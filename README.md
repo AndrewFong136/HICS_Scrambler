@@ -1,6 +1,8 @@
 # HICS_Scrambler
 
-A team scrambler for the HKU International Case Society aiming to minimise team member past matches and maximise role allocation based on preferences. v2.0 allows for reassigning teams and the options to view, update or delete past matching history.
+A team scrambler for the HKU International Case Society aiming to minimise team member past matches and maximise role allocation based on preferences. 
+
+v2.0 allows for reassigning teams and the options to view, update or delete past matching history.
 
 ## Current constraints:
 - Only accepts exactly 48 members to form 12 teams of 4
