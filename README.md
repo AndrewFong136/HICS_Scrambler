@@ -19,7 +19,7 @@ You can choose to directly run the binary EXE, or build from source.
 
 ## Build from source:
 
-As v1.1 requires OpenXLSX for .xlsx support, download the OpenXLSX file here: 
+As > v1.1 requires OpenXLSX for .xlsx support, download the OpenXLSX file here: 
 https://github.com/troldal/OpenXLSX/tree/5723411d47643ce3b5b9994064c26ca8cd841f13/OpenXLSX
 
 In your `/path/to/HICS_Scrambler/`, place the OpenXLSX file inside.
