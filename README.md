@@ -1,13 +1,13 @@
 # HICS_Scrambler
 
-A team scrambler for the HKU International Case Society aiming to minimise team member past matches and maximise role allocation based on preferences. 
+A team scrambler for the HKU International Case Society aiming to minimise team member past matches and maximise role allocation based on preferences. v2.0 allows for reassigning teams and the options to view, update or delete past matching history.
 
 ## Current constraints:
 - Only accepts exactly 48 members to form 12 teams of 4
-- Only accepts XLSX or CSV files
+- Only accepts XLSX, CSV or TSV files
 - Only accepts 4 specific roles
 - File input specific requirements:
-    Name Preferences(1 - 4, separated by space) Past matches(no limit, separated by space)
+    Name Preferences(1 - 4, separated by space)
 
 ## Prerequisites:
 - CMake installed
