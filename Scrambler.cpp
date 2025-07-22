@@ -225,7 +225,7 @@ int main() {
             cout << "Congratulations! You found the release notes! Not that you'll be particularly interested in them anyways.\n\n"
                            "v1.0:\n - Team scrambler based on ranked preferences and minimising past matches\n - Support for .txt, and .csv files\n\n"
                            "v1.1:\n - Added support for .xlsx and .tsv files\n - Removed .txt support since google sheets does not have the option to download as .txt\n\n"
-                           "v2.0:\n - Separated match history into a separate database\n - Allows the match history to be updated based on newly assigned member_db for next team scrambling \n - Cleaner interface\n - Included a little bit of attitude :)\n\n\n"
+                           "v2.0:\n - Separated match history into a separate database\n - Allows the match history to be updated based on newly assigned teams for next team scrambling \n - Cleaner interface\n - Included a little bit of attitude :)\n\n\n"
                            "Press ENTER to go back.\n\n";
 
             cin.ignore();
@@ -235,7 +235,7 @@ int main() {
         }
     }
 
-    assign_: { //first time assign member_db
+    assign_: { //first time assign teams
 
         cout << "INPUT INSTRUCTIONS:\n"
                 "Enter filename along with the file type. Example: test.xlsx\n"
