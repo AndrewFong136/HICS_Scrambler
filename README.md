@@ -42,18 +42,22 @@ cmake --build . --config Release
 
 Your program should be ready in `/path/to/HICS_Scrambler/build/Release/Scrambler.exe`.
 
+There are test files in the `test` folder, make sure to move them to the same folder the binary executable resides in. 
+
 ## Algorithm
 The team scrambling algorithm is [simulated annealing](https://www.baeldung.com/cs/simulated-annealing):
 
-First, all 48 members are randomly assigned to 12 teams.
+First, all 48 members are randomly assigned to 12 teams and members within the teams are assigned roles based on their preferences (1 being the highest).
 
-Then, two random members from different teams are chosen and based on the members' history with past matches within their teams, a penalty is calculated. The more past matches, the higher the penalty.
+Then, two random members from the total 48 members are chosen to be swapped. 
 
-Afterwards, the two members are swapped and new penalty is calculated with the swapped members in new teams. 
+If the two members are from the same team, that means only their roles are swapped. The change in preferences after assigned new roles is calculated as a cost. The lower the cost, the more desirable the outcome. 
 
-If the change in penalty is negative, this means that the swapped state is a better solution and thus it is kept. However, if the change in penalty is positive, according to simulated annealing the new solution is kept or discarded based on probability.
+If the two members are from different teams, then not only is the preference cost calculated, but also based on the members' history with past matches within their new teams, a penalty is calculated and added to the total cost. The more past matches, the higher the penalty. 
 
-This process is repeated for a number of times (base code default is 20000 iterations). 
+If the total cost is negative, this means that the swapped state is a better solution and thus it is kept. However, if it is positive, according to simulated annealing the new solution is kept or discarded based on probability.
 
-After the teams are created, members within the teams are assigned roles based on their preferences (1 being the highest). This is done by brute-forcing all 24 permutations of different roles and choosing the solution with maximum satisfaction. 
+This process is repeated for a number of times (base code default is 200000 iterations). 
+
+_Note: prior to **v2.01**, the algorithm calculated the preferences and past matches separately. The newest update accounts for both factors when conducting simulated annealing._
 
