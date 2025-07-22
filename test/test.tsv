@@ -1,0 +1,48 @@
+Person1	3	1	4	2	Person12	Person33	Person7
+Person2	2	4	1	3	Person18	Person41	
+Person3	1	3	2	4	Person6	Person22	Person39
+Person4	4	2	3	1	Person19		
+Person5	1	4	3	2	Person9	Person 28	
+Person6	2	3	1	4	Person3	Person 40	
+Person7	4	1	2	3	Person1	Person 30	
+Person8	3	2	4	1	Person15		
+Person9	2	1	4	3	Person5	Person 37	
+Person10	3	4	1	2	Person21		
+Person11	1	2	3	4	Person26	Person 48	
+Person12	4	3	2	1	Person1	Person 34	
+Person13	4	1	3	2	Person27		
+Person14	2	3	4	1	Person38		
+Person15	1	4	2	3	Person8	Person 45	
+Person16	3	2	1	4	Person32		
+Person17	3	1	2	4	Person29	Person 42	
+Person18	2	4	3	1	Person2		
+Person19	1	3	4	2	Person4	Person 36	
+Person20	4	2	1	3	Person44		
+Person21	1	2	4	3	Person10		
+Person22	4	3	1	2	Person3	Person 47	
+Person23	2	1	3	4	Person31		
+Person24	3	4	2	1	Person46		
+Person25	2	3	1	4	Person43		
+Person26	4	1	2	3	Person11		
+Person27	1	4	3	2	Person13		
+Person28	3	2	4	1	Person5		
+Person29	1	3	4	2	Person17		
+Person30	4	2	1	3	Person7		
+Person31	3	1	2	4	Person23		
+Person32	2	4	3	1	Person16		
+Person33	4	1	2	3	Person1		
+Person34	2	3	1	4	Person12		
+Person35	1	4	3	2	Person41		
+Person36	3	2	4	1	Person19		
+Person37	2	1	4	3	Person14		
+Person38	3	4	1	2	Person26		
+Person39	1	2	3	4	Person3		
+Person40	4	3	2	1	Person6		
+Person41	1	3	2	4	Person2	Person35	
+Person42	4	2	3	1	Person17		
+Person43	3	1	4	2	Person25		
+Person44	2	4	1	3	Person20		
+Person45	3	2	1	4	Person15		
+Person46	1	4	2	3	Person24		
+Person47	4	3	1	2	Person22		
+Person48	2	1	4	3	Person11		

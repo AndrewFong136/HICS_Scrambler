@@ -25,28 +25,43 @@ using namespace std;
 using namespace OpenXLSX;
 namespace fs = std::filesystem;
 
-string teams[12][4];
-map<string, array<int, 4>> db;
-vector<string> randomised;
+map<string, array<int, 4>> preferences;
+vector<string> members;
 unordered_map<string, unordered_set<string>> match_history;
+unordered_map<string, int> roles;
+unordered_map<string, int> teams;
 
 string dbPath = "past_matches.db";
 sqlite3* pastdb;
 char* errMsg = nullptr;
 int rc;
 
-int calculate_penalty(int t, int m1) {
-    int penalty = 0;
-    for(int i = 0; i < 4; i++){
-        if(i != m1) {
-            string m2 = teams[t][i];
-            if(match_history.find(teams[t][m1]) != match_history.end() &&
-               match_history[teams[t][m1]].find(m2) != match_history[teams[t][m1]].end()) {
+double match_penalty(string m) {
+    double penalty = 0;
+    int t = teams[m];
+
+    for(int k = 0; k < 4; k++){
+        string c = members[t * 4 + k];
+        if(c != m) {
+            if(match_history.find(m) != match_history.end() &&
+               match_history[m].find(c) != match_history[m].end()) {
                 penalty++;
             }
         }
     }
     return penalty;
+}
+
+double calculate_penalty(int i, int j, bool flag) {
+    string m1 = members[i];
+    string m2 = members[j];
+    double old_rank = preferences[m1][roles[m1]] + preferences[m2][roles[m2]];
+    double new_rank = preferences[m1][roles[m2]] + preferences[m2][roles[m1]];
+    double delta_rank = new_rank - old_rank;
+
+    if(flag) return delta_rank;
+
+    return match_penalty(m1) + match_penalty(m2) + delta_rank;
 }
 
 string trim(const string& str) {
@@ -83,7 +98,7 @@ void update_db() {
         for (int j = 0; j < 4; j++){
             for (int k = j + 1; k < 4; k++){
                 if (!first) it << ", ";
-                it << "('" << teams[i][j] << "', '" << teams[i][k] << "'), ('" << teams[i][k] << "', '" << teams[i][j] << "')";
+                it << "('" << members[i * 4 + j] << "', '" << members[i * 4 + k] << "'), ('" << members[i * 4 + k] << "', '" << members[i * 4 + j] << "')";
                 first = false;
             }
         }
@@ -129,6 +144,7 @@ void save() {
 
 int main() {
     //Sync to match_history for data processing if database exists
+
     if(fs::exists(dbPath)){
         rc = sqlite3_open(dbPath.c_str(), &pastdb);
         rc = sqlite3_exec(pastdb, "SELECT * FROM Members;", callback, nullptr, &errMsg);
@@ -203,7 +219,6 @@ int main() {
             goto loop;
         }
         case '5': {
-            if(!first_assign) save();
             return 0;
         }
         case '6': {
@@ -219,8 +234,6 @@ int main() {
             goto loop;
         }
     }
-
-
 
     assign_: { //first time assign teams
 
@@ -320,7 +333,7 @@ int main() {
 
             name = trim(name);
             if(name.empty()) continue;
-            randomised.push_back(name);
+            members.push_back(name);
 
 
             // Ranked preferences of positions
@@ -333,64 +346,81 @@ int main() {
             }
 
             // Store the name and preferences in the database
-            db[name] = ranks;
+            preferences[name] = ranks;
         }
 
         file.close();
     }
 
-    reassign: {//reassign teams
+    reassign: {
        //Randomise the names
         random_device rd;
         mt19937 g(rd());
-        shuffle(randomised.begin(), randomised.end(), g);
+        shuffle(members.begin(), members.end(), g);
 
-        // Fill the teams with randomised names
-        for(int i = 0; i < 48; i++){
-            teams[i / 4][i % 4] = randomised[i];
+        for(int i = 0; i < 48; i++) {
+            teams[members[i]] = i / 4;
+        }
 
+        for(int i = 0; i < 12; i++){
+            // Brute force all permutations to find the best assignment
+            vector<int> perm = {0, 1, 2, 3};
+            vector<int> best_roles(4);
+            int best_sum = INT_MAX;
+            do {
+                int sum = 0;
+                for (int j = 0; j < 4; j++) {
+                    sum += preferences[members[i * 4 + j]][perm[j]];
+                }
+                if (sum < best_sum) {
+                    best_sum = sum;
+                    best_roles = perm;
+                }
+            } while (next_permutation(perm.begin(), perm.end()));
+
+            for(int j = 0; j < 4; j++) {
+                roles[members[i * 4 + j]] = best_roles[j];
+            }
         }
 
         // Simulated annealing parameters
         double init_temp = 1000.0;
         double cooling_rate = 0.995;
-        int iterations = 20000; //adjust as necessary
-        int current_penalty = 0;
+        int iterations = 200000; //adjust as necessary
 
-        // Choose two teams at random and swap members
-        uniform_int_distribution<int> team_dist(0, 11);
-        uniform_int_distribution<int> member_dist(0, 3);
+        // Swap members at random
+        uniform_int_distribution<int> member_dist(0, 47);
+        double T = init_temp;
 
         for(int itr = 0; itr < iterations; itr++) {
-            int t1 = team_dist(g);
-            int t2 = team_dist(g);
-            while (t1 == t2) t2 = team_dist(g);
-
             int m1 = member_dist(g);
             int m2 = member_dist(g);
             while (m1 == m2) m2 = member_dist(g);
 
-            int penalty_old = calculate_penalty(t1, m1) + calculate_penalty(t2, m2);
+            bool teams_flag = (teams[members[m1]] == teams[members[m2]]);
 
-            // Swap members
-            swap(teams[t1][m1], teams[t2][m2]);
-
-            int penalty_new = calculate_penalty(t1, m1) + calculate_penalty(t2, m2);
-
-            int delta_penalty = penalty_new - penalty_old;
-
-            double T = init_temp * pow(cooling_rate, itr);
+            double delta = calculate_penalty(m1, m2, teams_flag);
 
             uniform_real_distribution<double> prob_dist(0.0, 1.0);
             double random = prob_dist(g);
 
-            if (delta_penalty < 0 || (delta_penalty > 0 && exp(-delta_penalty / T) > random)) {
-                current_penalty += delta_penalty;
-            } else {
-                // Swap back if not accepted
-                swap(teams[t1][m1], teams[t2][m2]);
+            if (delta < 0 || (delta > 0 && exp(-delta / T) > random)) {
+                swap(members[m1], members[m2]);
+
+                //swap roles
+                int tmp = roles[members[m1]];
+                roles[members[m1]] = roles[members[m2]];
+                roles[members[m2]] = tmp;
+
+                if(teams_flag) continue;
+
+                //swap teams
+                tmp = teams[members[m1]];
+                teams[members[m1]] = teams[members[m2]];
+                teams[members[m2]] = tmp;
             }
 
+            T *= cooling_rate;
             //can add break condition if T < min_temp and unchanging penalty
         }
 
@@ -402,36 +432,12 @@ int main() {
             {3, "Financials"}
         };
 
-        // Assign roles in teams
+        // Output
         for(int i = 0; i < 12; i++) {
-            //rows: team members, columns: positions, values: preferences
-            int cost_matrix[4][4];
-
-            for (int j = 0; j < 4; j++) {
-                for (int k = 0; k < 4; k++) {
-                    cost_matrix[j][k] = db[teams[i][j]][k];
-                }
-            }
-
-            // Brute force all permutations to find the best assignment
-            vector<int> perm = {0, 1, 2, 3};
-            vector<int> roles(4);
-            int best_sum = INT_MAX;
-            do {
-                int sum = 0;
-                for (int j = 0; j < 4; j++) {
-                    sum += cost_matrix[j][perm[j]];
-                }
-                if (sum < best_sum) {
-                    best_sum = sum;
-                    roles = perm;
-                }
-            } while (next_permutation(perm.begin(), perm.end()));
-
-            //Output
             cout << "Team " << i+1 << ":\n";
             for (int j = 0; j < 4; j++) {
-                cout << teams[i][j] << ": " << roles_db[roles[j]] <<"\n";
+                string m = members[i * 4 + j];
+                cout << m << ": " << roles_db[roles[m]] <<"\n";
             }
             cout << '\n';
         }
@@ -441,7 +447,7 @@ int main() {
 
     loop_reassign:
 
-    cout << "1 -> Reassign teams\n"
+    cout << "1 -> Reassign Teams\n"
             "2 -> Go back\n"
             "3 -> Exit\n\n";
 
